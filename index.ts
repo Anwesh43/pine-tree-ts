@@ -41,18 +41,20 @@ class DrawingUtil {
 
     static drawPineTree(context : CanvasRenderingContext2D, scale : number) {
         const size : number = Math.min(w, h) / sizeFactor 
-        const gap : number = size / parts 
+        const gap : number = size / (parts + 1) 
+        const sf : number = ScaleUtil.sinify(scale)
         context.save()
         context.translate(w / 2, h / 2)
-        DrawingUtil.drawLine(context, 0, 0, 0, -size * scale)
+        DrawingUtil.drawLine(context, 0, 0, 0, -size * sf)
         for (var j = 1; j < parts; j++) {
-            const sfi : number = ScaleUtil.sinify(ScaleUtil.divideScale(scale, j, parts + 1))
+            const sfi : number = ScaleUtil.divideScale(sf, j, parts + 1)
+            const sfPrev : number = ScaleUtil.divideScale(sf, j - 1, parts + 1)
             context.save()
             context.translate(0, -gap * (j + 1))
             for (var k = 0; k < 2; k++) {
                 context.save()
                 context.rotate(deg * (1 - 2 * k) * sfi)
-                DrawingUtil.drawLine(context, 0, 0, 0, -gap)
+                DrawingUtil.drawLine(context, 0, 0, 0, gap * Math.floor(sfPrev))
                 context.restore()
             }
             context.restore()
@@ -78,6 +80,7 @@ class Stage {
         this.canvas.width = w 
         this.canvas.height = h 
         this.context = this.canvas.getContext('2d')
+        document.body.appendChild(this.canvas)
     }
 
     render() {
@@ -140,7 +143,7 @@ class Animator {
 
     stop() {
         if (this.animated) {
-            this.animated = true 
+            this.animated = false 
             clearInterval(this.interval) 
         }
     }
