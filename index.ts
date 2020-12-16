@@ -29,3 +29,41 @@ class ScaleUtil {
         return Math.sin(scale * Math.PI)
     }
 }
+
+class DrawingUtil {
+
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        context.beginPath()
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        context.stroke()
+    }
+
+    static drawPineTree(context : CanvasRenderingContext2D, scale : number) {
+        const size : number = Math.min(w, h) / sizeFactor 
+        const gap : number = size / parts 
+        context.save()
+        context.translate(w / 2, h / 2)
+        DrawingUtil.drawLine(context, 0, 0, 0, -size * scale)
+        for (var j = 1; j < parts; j++) {
+            const sfi : number = ScaleUtil.sinify(ScaleUtil.divideScale(scale, j, parts + 1))
+            context.save()
+            context.translate(0, -gap * (j + 1))
+            for (var k = 0; k < 2; k++) {
+                context.save()
+                context.rotate(deg * (1 - 2 * k) * sfi)
+                DrawingUtil.drawLine(context, 0, 0, 0, -gap)
+                context.restore()
+            }
+            context.restore()
+        }
+        context.restore()
+    }
+
+    static drawPTNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor 
+        context.strokeStyle = colors[i]
+        DrawingUtil.drawPineTree(context, scale)
+    }
+}
