@@ -206,3 +206,25 @@ class PineTree {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    animator : Animator = new Animator()
+    pt : PineTree = new PineTree()
+
+    render(context : CanvasRenderingContext2D) {
+        this.pt.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.pt.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.pt.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
